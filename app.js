@@ -1,12 +1,22 @@
-const http = require('http');
-const port = process.env.PORT || 3000
+const express = require('express');
+const morgan = require('morgan');
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/html');
-  res.end('<h1>Hello World</h1>');
+const app = express();
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.status(200).send("Hello world.");
+})
+
+// This is a custom middleware, it adds a time stamp(of the time the API is requested) to all API return 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
-server.listen(port,() => {
-  console.log(`Server running at port `+port);
-});
+module.exports = app;

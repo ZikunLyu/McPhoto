@@ -1,19 +1,13 @@
 const Student = require('./../models/testModel');
+const catchAsync = require('./../utils/catchAsync');
 
-exports.createStudent = async (req, res) => {
-  try {
-    const newStudent = await Student.create(req.body);
+exports.createStudent = catchAsync(async (req, res, next) => {
+  const newStudent = await Student.create(req.body);
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        student: newStudent
-      }
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err
-    });
-  }
-};
+  res.status(201).json({
+    status: 'success',
+    data: {
+      student: newStudent
+    }
+  });
+});

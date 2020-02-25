@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide a password!'],
-    minlength: 8
+    minlength: 8,
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -42,6 +43,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+// Here we encrypt the password
 userSchema.pre('save', async function(next) {
   // Only run the function only if the password field is modified
   if (!this.isModified('password')) return next();
@@ -54,6 +56,13 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// Instance method: method that is available on all documents of a certain collection (think of it like a JAVA static method)
+userSchema.methods.verifyPassword = function(userTypedPassword, realPassword) {
+  // can't use this.password cuz we set the "select" to false for the password field. Otherwise we could just call "this.password", as "this" refers to the request returned by the API call that is related to this userSchema
+  // ps: it's mongoDB feature that we create this schema here, and then we can access all pieces of data stored in DB corresponding to this schema.
+  return bcrypt.compare(userTypedPassword, realPassword);
+};
 
 const User = mongoose.model('User', userSchema); // Student model is created to interact with student table in db
 

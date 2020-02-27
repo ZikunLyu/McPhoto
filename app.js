@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 3) ROUTES
+// 3) API ROUTES
 app.use('/api/v1', testRouter);
 app.use('/api/v1/users', userRouter);
 

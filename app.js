@@ -1,11 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
+const swaggerUI = require('swagger-ui-express');
+const swaggerDoc = require('./swagger.json');
 const AppError = require('./utils/appError');
 const testRouter = require('./routes/testRoutes');
 const userRouter = require('./routes/userRoutes');
 const globalErrorHandler = require('./controllers/errorController');
-const swaggerUI = require('swagger-ui-express');
-const swaggerDoc = require('./swagger.json');
 
 const app = express();
 

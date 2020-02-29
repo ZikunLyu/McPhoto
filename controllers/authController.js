@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -55,4 +56,28 @@ exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) When the user makes an API request, the request comes with an header, we check this header (contains token) to see if the user is authorized to make this request
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(
+      new AppError('You are not logged in. Please log in to get access', 401)
+    );
+  }
+
+  // 2) Verify the token
+  // use promisify to quickly getting the promise and then we can use "await" with it
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log(decoded);
+
+  // You can see sometimes we handle the error on the spot(like something is empty), other times eg when function returns a failure status, we handle it in errorController, cuz in that controller we can rewrite the error msg to a more informative one
 });

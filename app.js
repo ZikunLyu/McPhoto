@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const swaggerUI = require('swagger-ui-express');
+const swaggerDoc = require('./swagger.json');
 const AppError = require('./utils/appError');
 const testRouter = require('./routes/testRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -26,6 +28,7 @@ app.use((req, res, next) => {
 // 3) API ROUTES
 app.use('/api/v1', testRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
 // 4) Error handling middleware
 app.all('*', (req, res, next) => {

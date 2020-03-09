@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 // You see all of below validators. Indeed we can do validation in frontend.
 // However, it is really good to validate here as we can prevent ppl surpassing the validation by simply calling the API not from frontend (eg. postman)
@@ -23,6 +24,11 @@ const userSchema = new mongoose.Schema({
         'Email should be McGill email ending with "@mail.mcgill.ca" or "@mcgill.ca".'
     }
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password!'],
@@ -41,9 +47,9 @@ const userSchema = new mongoose.Schema({
       message: 'Password are not the same.'
     }
   },
-  passwordLastChanged: {
-    type: Date
-  }
+  passwordLastChanged: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date
 });
 
 // Here we encrypt the password
@@ -57,6 +63,15 @@ userSchema.pre('save', async function(next) {
   // Delete the passwordConfirm field as it's not encrypted and not needed
   // Note even we set it as required, it does not matter here, as required is for the input, it's not required to save into the DB
   this.passwordConfirm = undefined;
+  next();
+});
+
+// Function before saving to DB, update the passwordLastChanged prop, which happens after the resetPassword api is called
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  // Here we do a small hack of minus 1s. This is to prevent sometimes this passwordLastChanged prop is updated later than the jwt is issued(we issue a new jwt when resetPassword is successful) (Ideally this two time stamps shall be the same)
+  this.passwordLastChanged = Date.now() - 1000;
   next();
 });
 
@@ -76,6 +91,17 @@ userSchema.methods.passwordChangedAfterTokenIssued = function(jwtTimestamp) {
     return jwtTimestamp < lastChangedTimestamp;
   }
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // reset password will expire in the future 10 mins
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema); // Student model is created to interact with student table in db

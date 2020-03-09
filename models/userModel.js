@@ -40,6 +40,9 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Password are not the same.'
     }
+  },
+  passwordLastChanged: {
+    type: Date
   }
 });
 
@@ -62,6 +65,17 @@ userSchema.methods.verifyPassword = function(userTypedPassword, realPassword) {
   // can't use this.password cuz we set the "select" to false for the password field. Otherwise we could just call "this.password", as "this" refers to the request returned by the API call that is related to this userSchema
   // ps: it's mongoDB feature that we create this schema here, and then we can access all pieces of data stored in DB corresponding to this schema.
   return bcrypt.compare(userTypedPassword, realPassword);
+};
+
+userSchema.methods.passwordChangedAfterTokenIssued = function(jwtTimestamp) {
+  if (this.passwordLastChanged) {
+    const lastChangedTimestamp = parseInt(
+      this.passwordLastChanged.getTime() / 1000,
+      10
+    );
+    return jwtTimestamp < lastChangedTimestamp;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema); // Student model is created to interact with student table in db

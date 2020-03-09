@@ -19,6 +19,14 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = () => {
+  return new AppError('Invalid token. Please log in again.', 401);
+};
+
+const handleJWTExpiredError = () => {
+  return new AppError('Your token has expired. Please log in again.', 401);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -26,7 +34,7 @@ const sendErrorDev = (err, res) => {
     message: err.message,
     stack: err.stack
   });
-}
+};
 
 const sendErrorProd = (err, res) => {
   // Operational, trusted error, send message to client
@@ -46,7 +54,7 @@ const sendErrorProd = (err, res) => {
       message: 'Something went very wrong!'
     });
   }
-}
+};
 
 // Why all API related error will be directed to here?
 // Cuz the API call definitely respond req, res, and next, if there is an error,
@@ -60,7 +68,6 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     // it's a good practise to not directly mutate the returned err, but create a copy of it to be modified.
     let error = { ...err };
-    console.log(error.code);
     // In the production, as we defined in the sendErrorProd(), 
     // we concise the error msg, but also in the case of third party error, we don't throw anything
     // MongoDB side error will be considered as 3rd party, however, we do want the error to be thrown to user if it's coming from MongoDB
@@ -69,6 +76,8 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
     sendErrorProd(error, res);
   }

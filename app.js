@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+
 const swaggerUI = require('swagger-ui-express');
 const swaggerDoc = require('./swagger.json');
 const AppError = require('./utils/appError');

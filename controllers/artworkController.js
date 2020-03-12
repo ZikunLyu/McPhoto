@@ -34,7 +34,10 @@ exports.uploadArtFileByTitleArtist = catchAsync(async (req, res, next) => {
   fileInfo.mimetype = file.mimetype;
   fileInfo.originalname = file.originalname;
   fileInfo.size = file.size;
-  fileInfo.path = `./uploads/${file.originalname}`;
+  fileInfo.filename = `${req.body.artist}-${req.body.title}.${
+    file.originalname.split('.')[1]
+  }`;
+  fileInfo.path = `uploads/artworkFiles/${fileInfo.filename}`;
   await ArtWork.findOneAndUpdate(
     {
       title: req.body.title,
@@ -42,12 +45,21 @@ exports.uploadArtFileByTitleArtist = catchAsync(async (req, res, next) => {
     },
     { artworkfile: fileInfo, isPictureUpload: true },
     function(err, doc) {
-      if (err) {
+      if (doc === null) {
+        fs.unlinkSync(`uploads/artworkFiles/${file.filename}`);
         return console.log(err);
       }
-      fs.renameSync(
-        `./uploads/${file.filename}`,
-        `./uploads/${file.originalname}`
+      fs.mkdir(
+        `uploads/artworkFiles/${req.body.artist}`,
+        { recursive: true },
+        error => {
+          if (!error) {
+            fs.renameSync(
+              `uploads/artworkFiles/${file.filename}`,
+              `uploads/artworkFiles/${req.body.artist}/${fileInfo.filename}`
+            );
+          }
+        }
       );
       console.log(doc);
     }

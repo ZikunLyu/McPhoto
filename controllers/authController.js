@@ -12,6 +12,25 @@ const signToken = userId => {
   });
 };
 
+const createAndSendToken = (user, res, statusCode) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    // set the jwt in cookie also expires as the jwt expires
+    expires: new Date(
+      Date.now() + process.env.JWT_EXPIRES_IN * 24 * 3600 * 1000
+    ),
+    // so that the cookie cannot be accessed or modified by browser, only by the http request
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   // Here when user sign up, only specified info here is exposed to DB.
   // You can tell that we do not provide user to sign up as an admin. To fix, we can either add admin flow or simple create admin by forcily changing the role in the DB manually.
@@ -25,15 +44,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordLastChanged: req.body.passwordLastChanged
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  });
+  createAndSendToken(newUser, res, 201);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -55,12 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3) If everything is ok, send the token to the user
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token
-  });
+  createAndSendToken(user, res, 200);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -183,10 +189,14 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 4) Log the user in, send jwt
-  const token = signToken(user._id);
+  createAndSendToken(user, res, 200);
+});
 
-  res.status(200).json({
-    status: 'success',
-    token
-  });
+exports.updatePassword = catchAsync(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+password');
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  createAndSendToken(user, res, 200);
 });

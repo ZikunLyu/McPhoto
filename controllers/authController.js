@@ -14,16 +14,16 @@ const signToken = userId => {
 
 const createAndSendToken = (user, res, statusCode) => {
   const token = signToken(user._id);
-  const cookieOptions = {
-    // set the jwt in cookie also expires as the jwt expires
-    expires: new Date(
-      Date.now() + process.env.JWT_EXPIRES_IN * 24 * 3600 * 1000
-    ),
-    // so that the cookie cannot be accessed or modified by browser, only by the http request
-    httpOnly: true
-  };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  res.cookie('jwt', token, cookieOptions);
+  // const cookieOptions = {
+  //   // set the jwt in cookie also expires as the jwt expires
+  //   expires: new Date(
+  //     Date.now() + process.env.JWT_EXPIRES_IN * 24 * 3600 * 1000
+  //   ),
+  //   // so that the cookie cannot be accessed or modified by browser, only by the http request
+  //   httpOnly: true
+  // };
+  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  // res.cookie('jwt', token, cookieOptions);
 
   res.status(statusCode).json({
     status: 'success',

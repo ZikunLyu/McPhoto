@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ArtWorkFile = require('./artWorkFileModel')
+const ArtWorkFile = require('./artWorkFileModel');
 
 const artWorkSchema = new mongoose.Schema({
   title: {
@@ -59,7 +59,7 @@ const artWorkSchema = new mongoose.Schema({
   artworkfile: {
     type: ArtWorkFile
   }
-})
+});
 artWorkSchema.index({ artist: 1, title: 1 }, { unique: true });
 const ArtWork = mongoose.model('ArtWork', artWorkSchema);
 

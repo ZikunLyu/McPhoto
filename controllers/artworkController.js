@@ -15,7 +15,7 @@ class APIFeatures {
   filter() {
     const queryObj = { ...this.queryString };
     // The following fields need to be excluded as they are not part of query for filtering, they will be handled individually
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
     excludedFields.forEach(el => delete queryObj[el]);
 
     // 1) Filtering
@@ -24,6 +24,23 @@ class APIFeatures {
 
     // find() function return a query, not directly the objects, we will build the query layer by layer, and in the end get the objects all together
     this.query = ArtWork.find(JSON.parse(queryStr));
+    return this;
+  }
+
+  search() {
+    // 1.5) search keyword in artist, description, and title field
+    if (this.queryString.search) {
+      const keyword = this.queryString.search;
+      this.query = ArtWork.find({
+        $or: [
+          { artist: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } },
+          { title: { $regex: keyword, $options: 'i' } }
+        ]
+      });
+      //this.query = ArtWork.find({ description: { $regex: `/${keyword}/i` } });
+      //this.query = ArtWork.find({ title: { $regex: `/${keyword}/i` } });
+    }
     return this;
   }
 
@@ -60,10 +77,11 @@ class APIFeatures {
 }
 
 // get all artworks, optional to add keywords and limiting
-exports.getAllArtworks = catchAsync(async (req, res, next) => {
+exports.getAllArtworks = catchAsync(async (req, res) => {
   // BUILD QUERY
   const features = new APIFeatures(ArtWork.find(), req.query)
     .filter()
+    .search()
     .sort()
     .limitFields()
     .paginate();
@@ -76,6 +94,24 @@ exports.getAllArtworks = catchAsync(async (req, res, next) => {
     data: {
       artworks
     }
+  });
+});
+
+// get the number of all artworks, optional to add keywords and limiting
+exports.getAllArtworksNum = catchAsync(async (req, res) => {
+  // BUILD QUERY
+  const features = new APIFeatures(ArtWork.find(), req.query)
+    .filter()
+    .search()
+    .sort()
+    .limitFields()
+    .paginate();
+  // EXECUTE QUERY
+  const artworks = await features.query;
+  // SEND RESPONSE
+  res.status(200).json({
+    status: 'success',
+    results: artworks.length
   });
 });
 

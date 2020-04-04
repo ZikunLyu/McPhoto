@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const hpp = require('hpp');
 
 const swaggerUI = require('swagger-ui-express');
 const rateLimit = require('express-rate-limit');
@@ -45,6 +46,11 @@ app.use(xss()); // replace the html tag with other codes in the parameters eg: '
 app.get('/', (req, res) => {
   res.status(200).json({ time: Date.now() });
 });
+
+// Prevent parameter pollution, so like sort=price&sort=date, this duplicate sort parameter will be treated to only execute the last one
+// Note: you can define a whitelist inside hpp() which specifies that some fields allow duplicate define to query
+// eg: price=8&price=9, get the artworks of price 8 and 9, should be allowed
+app.use(hpp());
 
 // This is a custom middleware, it adds a time stamp(of the time the API is requested) to all API return
 app.use((req, res, next) => {

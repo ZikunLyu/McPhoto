@@ -38,8 +38,6 @@ class APIFeatures {
           { title: { $regex: keyword, $options: 'i' } }
         ]
       });
-      //this.query = ArtWork.find({ description: { $regex: `/${keyword}/i` } });
-      //this.query = ArtWork.find({ title: { $regex: `/${keyword}/i` } });
     }
     return this;
   }

@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const hpp = require('hpp');
@@ -15,6 +16,9 @@ const artRouter = require('./routes/artWorkRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'server_render_views'));
 
 // Set security HTTP headers
 app.use(helmet());

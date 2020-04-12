@@ -1,6 +1,7 @@
+const path = require('path');
 const nodemailer = require('nodemailer');
 const htmlToText = require('html-to-text');
-const fs = require('fs');
+const pug = require('pug');
 
 module.exports = class Email {
   constructor(user, url) {
@@ -12,7 +13,13 @@ module.exports = class Email {
 
   Transport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        service: 'SendGrid',
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD
+        }
+      });
     }
     return nodemailer.createTransport({
       //service: 'Gamil',
@@ -27,8 +34,13 @@ module.exports = class Email {
 
   async send(template, subject) {
     // 1) pass in the template
-    const html = fs.readFileSync(
-      `${__dirname}/../email-Templates/${template}.html`
+    const html = pug.renderFile(
+      path.join(__dirname, `../server_render_views/email/${template}.pug`),
+      {
+        firstname: this.firstname,
+        url: this.url,
+        subject
+      }
     );
     // 2) Define email option
     const mailOptions = {
@@ -45,5 +57,12 @@ module.exports = class Email {
 
   async sendVerification() {
     await this.send('verificationEmail', 'Last step to join McGallery!');
+  }
+
+  async sendPasswordReset() {
+    await this.send(
+      'passwordReset',
+      'Your password reset token (valid for only 10 minutes)'
+    );
   }
 };

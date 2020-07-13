@@ -60,6 +60,8 @@ const artWorkSchema = new mongoose.Schema({
     type: ArtWorkFile
   }
 })
+
+//index created on {artist, title}
 artWorkSchema.index({ artist: 1, title: 1 }, { unique: true });
 const ArtWork = mongoose.model('ArtWork', artWorkSchema);
 

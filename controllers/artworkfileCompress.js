@@ -1,10 +1,10 @@
 const { execFile } = require('child_process');
+const fs = require('fs');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
-exports.generateCompressedImage = catchAsync(async (req, res, next) => {
-  const imagePath = req.query.filepath
-  console.log(imagePath);
-  await execFile(
+const getCompressedImage = catchAsync(async (imagePath, res) => {
+  execFile(
     'python3',
     [
       'controllers/imageCompress/compress.py',
@@ -18,11 +18,10 @@ exports.generateCompressedImage = catchAsync(async (req, res, next) => {
     function(error) {
       if (error) {
         console.error(`error:${error}`);
-      }
+      } else console.log('> small size image generated!');
     }
   );
-  console.log('small size image generated!')
-  await execFile(
+  execFile(
     'python3',
     [
       'controllers/imageCompress/compress.py',
@@ -36,11 +35,10 @@ exports.generateCompressedImage = catchAsync(async (req, res, next) => {
     function(error) {
       if (error) {
         console.error(`error:${error}`);
-      }
+      } else console.log('> medium size image generated!');
     }
   );
-  console.log('medium size image generated!')
-  await execFile(
+  execFile(
     'python3',
     [
       'controllers/imageCompress/compress.py',
@@ -54,9 +52,19 @@ exports.generateCompressedImage = catchAsync(async (req, res, next) => {
     function(error) {
       if (error) {
         console.error(`error:${error}`);
-      }
+      } else console.log('> Large size image generated!');
     }
   );
-  console.log('Large size image generated!')
-  res.end('Compressed image sucessfully generated!');
+});
+
+exports.generateCompressedImage = catchAsync(async (req, res, next) => {
+  const imagePath = req.query.imagePathReq;
+  await fs.access(imagePath, fs.constants.R_OK, err => {
+    if (err) {
+      console.error(`error:${err}`);
+      return next(new AppError('Image file does not exist', 401));
+    }
+    getCompressedImage(imagePath, res);
+  });
+  res.end(' > compressed image successfully generated!');
 });

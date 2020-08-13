@@ -200,7 +200,25 @@ exports.uploadArtFileByTitleArtist = catchAsync(async (req, res, next) => {
   res.end('File upload successful!');
 });
 
+exports.getFileInfoByTitleArtist = catchAsync(async (req, res, next) => {
+  await ArtWork.findOne(
+    {
+      title: req.query.title,
+      artist: req.query.artist
+    },
+    function(err, doc) {
+      if (err) {
+        return next(new AppError('Query Failed'), 401);
+      }
+      if (doc == null) {
+        return next(new AppError('The artwork does not exist'), 401);
+      }
+      res.send(doc);
+    }
+  );
+});
 exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
+  const size = req.query.imageSize;
   await ArtWork.findOne(
     {
       title: req.query.title,
@@ -213,7 +231,19 @@ exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
       if (doc == null) {
         return next(new AppError('The artwork does not exist'));
       }
-      res.send(doc.artworkfile.path);
+      const imagePath = `${doc.artworkfile.path.split('.')[0]}${size}.${
+        doc.artworkfile.path.split('.')[1]
+      }`;
+      fs.access(imagePath, fs.constants.R_OK, error => {
+        if (error) {
+          console.error(`error:${err}`);
+          return next(new AppError('Image file does not exist', 401));
+        }
+        res.download(imagePath, function(downloadError) {
+          if (downloadError) console.log(downloadError);
+          else console.log('Image send');
+        });
+      });
     }
   );
 });
@@ -221,4 +251,58 @@ exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
 exports.deleteAll = catchAsync(async (req, res, next) => {
   await ArtWork.deleteMany({});
   res.send('All artwork deleted');
+});
+
+exports.getArtworkListByArtist = catchAsync(async (req, res, next) => {
+  await ArtWork.find(
+    {
+      artist: req.query.artist
+    },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+        return next(new AppError('The artist has no artwork'));
+      }
+      console.log('All artwork quried!');
+      res.send(doc);
+    }
+  );
+});
+
+exports.getArtworkFileByArtist = catchAsync(async (req, res, next) => {
+  const lowerBound = req.query.lowerbound;
+  const higherBound = req.query.higherbound;
+  await ArtWork.find(
+    {
+      artist: req.query.artist
+    },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+        return next(new AppError('The artist has no artwork'));
+      }
+      let x = parseInt(lowerBound, 10);
+      const arr = [];
+      for (x; x <= higherBound; x += 1) {
+        if (doc[x] !== undefined) {
+          if (doc[x].isPictureUpload) {
+            const records = {
+              title: doc[x].title,
+              artist: doc[x].artist,
+              filename: doc[x].artworkfile.filename,
+              path: doc[x].artworkfile.path
+            };
+            arr.push(records);
+          } else {
+            const records = {
+              title: doc[x].title,
+              artist: doc[x].artist
+            };
+            arr.push(records);
+          }
+        }
+      }
+      res.send(arr);
+    }
+  );
 });

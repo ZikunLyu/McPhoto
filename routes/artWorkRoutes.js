@@ -18,6 +18,12 @@ router.get(
   '/getFilepathByTitleArtist',
   artworkController.getFilepathByTitleArtist
 );
+router.get('/getArtworkListByArtist', artworkController.getArtworkListByArtist);
+router.get('/getArtworkFileByArtist', artworkController.getArtworkFileByArtist);
+router.get(
+  '/getFileInfoByTitleArtist',
+  artworkController.getFileInfoByTitleArtist
+);
 router.delete('/deleteAll', artworkController.deleteAll);
 
 module.exports = router;

@@ -5,8 +5,7 @@
 # === Rule for dotfiles ===
 # Ignore all dotfiles.
 .*
-# Ignore config.env
-config.env
+
 # Exclude specific dotfiles that we want to track.
 !deps/**/.*
 !test/fixtures/**/.*

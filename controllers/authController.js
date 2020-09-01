@@ -44,8 +44,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordLastChanged: req.body.passwordLastChanged
   });
 
-  const url = 'sdf';
-  await new Email(newUser, url).sendVerification();
+  // const url = 'sdf';
+  // await new Email(newUser, url).sendVerification();
   createAndSendToken(newUser, res, 201);
 });
 

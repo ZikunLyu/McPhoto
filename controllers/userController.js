@@ -3,7 +3,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
 exports.getAUser = catchAsync(async (req, res, next) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   if (!email) {
     return next(new AppError('Please provide email to get User object.', 400));

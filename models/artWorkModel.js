@@ -18,6 +18,10 @@ const artWorkSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide artist name']
   },
+  artistEmail: {
+    type: String,
+    required: [true, 'Please provide artist email']
+  },
   creationTime: {
     type: Date,
     required: [true, 'Please provide creation date']

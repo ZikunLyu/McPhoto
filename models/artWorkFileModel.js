@@ -20,6 +20,10 @@ const artWorkFileSchema = new mongoose.Schema({
   filename: {
     type: String,
     required: true
+  },
+  authorEmail: {
+    type: String,
+    required: true
   }
 });
 

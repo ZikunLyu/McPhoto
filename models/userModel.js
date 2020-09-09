@@ -47,6 +47,18 @@ const userSchema = new mongoose.Schema({
       message: 'Password are not the same.'
     }
   },
+    street: {
+      type: String,
+      default: "845 Sherbrooke St W"
+  },
+  region: {
+    type: String,
+    default: "Montreal, Quebec H3A 0G4"
+  },
+  major: {
+    type: String,
+    default: "NA"
+  },
   passwordLastChanged: Date,
   passwordResetToken: String,
   passwordResetExpires: Date

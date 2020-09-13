@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema({
     default: "NA"
   },
   age: {
-    bsonType: "int",
+    type: Number,
     minimum: 1,
     maximum: 200,
     default: 18,
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
   birthday: {
     type: Number,
     default: 1,
-    
+
   },
   birthmonth: {
 

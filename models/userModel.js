@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true, // transfer whatever passed-in to lower case
     validate: {
-      validator: function(email) {
+      validator: function (email) {
         return (
           email.endsWith('@mail.mcgill.ca') || email.endsWith('@mcgill.ca')
         );
@@ -41,15 +41,15 @@ const userSchema = new mongoose.Schema({
     validate: {
       // This validator only works on CREATE and SAVE function in node.js!!
       // Thus won't validate if we use user.findOneAndUpdate() function to talk to DB in code (not talking about api call)
-      validator: function(el) {
+      validator: function (el) {
         return el === this.password;
       },
       message: 'Password are not the same.'
     }
   },
-    street: {
-      type: String,
-      default: "845 Sherbrooke St W"
+  street: {
+    type: String,
+    default: "845 Sherbrooke St W"
   },
   region: {
     type: String,
@@ -59,13 +59,28 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "NA"
   },
+  age: {
+    bsonType: "int",
+    minimum: 1,
+    maximum: 200,
+    default: 18,
+    description: "must be an integer in [ 1, 200 ]"
+  },
+  birthday: {
+    type: Number,
+    default: 1,
+    
+  },
+  birthmonth: {
+
+  },
   passwordLastChanged: Date,
   passwordResetToken: String,
   passwordResetExpires: Date
 });
 
 // Here we encrypt the password
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Only run the function only if the password field is modified
   if (!this.isModified('password')) return next();
 
@@ -79,7 +94,7 @@ userSchema.pre('save', async function(next) {
 });
 
 // Function before saving to DB, update the passwordLastChanged prop, which happens after the resetPassword api is called
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   // Here we do a small hack of minus 1s. This is to prevent sometimes this passwordLastChanged prop is updated later than the jwt is issued(we issue a new jwt when resetPassword is successful) (Ideally this two time stamps shall be the same)
@@ -88,13 +103,13 @@ userSchema.pre('save', function(next) {
 });
 
 // Instance method: method that is available on all documents of a certain collection (think of it like a JAVA static method)
-userSchema.methods.verifyPassword = function(userTypedPassword, realPassword) {
+userSchema.methods.verifyPassword = function (userTypedPassword, realPassword) {
   // can't use this.password cuz we set the "select" to false for the password field. Otherwise we could just call "this.password", as "this" refers to the request returned by the API call that is related to this userSchema
   // ps: it's mongoDB feature that we create this schema here, and then we can access all pieces of data stored in DB corresponding to this schema.
   return bcrypt.compare(userTypedPassword, realPassword);
 };
 
-userSchema.methods.passwordChangedAfterTokenIssued = function(jwtTimestamp) {
+userSchema.methods.passwordChangedAfterTokenIssued = function (jwtTimestamp) {
   if (this.passwordLastChanged) {
     const lastChangedTimestamp = parseInt(
       this.passwordLastChanged.getTime() / 1000,
@@ -105,7 +120,7 @@ userSchema.methods.passwordChangedAfterTokenIssued = function(jwtTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
   this.passwordResetToken = crypto

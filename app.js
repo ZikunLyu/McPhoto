@@ -13,6 +13,7 @@ const AppError = require('./utils/appError');
 const testRouter = require('./routes/testRoutes');
 const userRouter = require('./routes/userRoutes');
 const artRouter = require('./routes/artWorkRoutes');
+const experRouter = require('./routes/experienceRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -66,6 +67,7 @@ app.use((req, res, next) => {
 app.use('/api/v1', testRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/arts', artRouter);
+app.use('/api/v1/expers', experRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
 // 4) Error handling middleware

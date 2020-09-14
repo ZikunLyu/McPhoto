@@ -7,6 +7,8 @@ const User = require('../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
+const notFound = 'data/utils/notfound.png';
+
 /*
   Controller method: upload the information of an artwork
   fetch the fields from the http request
@@ -229,21 +231,37 @@ exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
         console.log(err);
       }
       if (doc == null) {
-        return next(new AppError('The artwork does not exist'));
+        //If the artwork is not found in the dataBase
+        return next(new AppError('Error: The artwork does not exist'));
       }
-      const imagePath = `${doc.artworkfile.path.split('.')[0]}${size}.${
-        doc.artworkfile.path.split('.')[1]
-      }`;
-      fs.access(imagePath, fs.constants.R_OK, error => {
-        if (error) {
-          console.error(`error:${err}`);
-          return next(new AppError('Image file does not exist', 401));
-        }
-        res.download(imagePath, function(downloadError) {
+      if (typeof doc.artworkfile === 'undefined') {
+        //If there is no image file's information in the database
+        res.status(401, 'Error: artwork file information does not found!');
+        res.download(notFound, function(downloadError) {
           if (downloadError) console.log(downloadError);
-          else console.log('Image send');
+          else console.log('NotFound Image send');
         });
-      });
+      } else {
+        // Assmble imagefile path by query result
+        const imagePath = `${doc.artworkfile.path.split('.')[0]}${size}.${
+          doc.artworkfile.path.split('.')[1]
+        }`;
+        fs.access(imagePath, fs.constants.R_OK, error => {
+          if (error) {
+            //If image file is not found in the filesystem
+            res.status(401, `Error: Image file does not exist`);
+            res.download(notFound, function(downloadError) {
+              if (downloadError) console.log(downloadError);
+              else console.log('NotFound Image send');
+            });
+            //return next(new AppError('Image file does not exist', 401));
+          }
+          res.download(imagePath, function(downloadError) {
+            if (downloadError) console.log(downloadError);
+            else console.log('Image send');
+          });
+        });
+      }
     }
   );
 });

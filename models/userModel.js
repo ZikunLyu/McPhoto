@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema({
   birthmonth: {
 
   },
+  about: {
+    type: String,
+    minlength: 8,
+    maxlength: 350
+  },
+  
   passwordLastChanged: Date,
   passwordResetToken: String,
   passwordResetExpires: Date

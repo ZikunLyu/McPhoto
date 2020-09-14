@@ -12,7 +12,7 @@ exports.getAllExperience = catchAsync(async (req, res, next) => {
   const exper = await Experience.findOne({ email: email });
 
   if (!exper) {
-      return next(new AppError('Please check the find one method above, 400'));
+      return next(new AppError('Please check the find one method above', 400));
   }
   
   // 3) If everything is ok, send the token to the user

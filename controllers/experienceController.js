@@ -9,7 +9,9 @@ exports.getAllExperience = catchAsync(async (req, res, next) => {
     return next(new AppError('Please login to get experience object.', 400));
   }
 
-  const exper = await Experience.findOne({ email: email });
+  //
+  const exper = await Experience.find({ email: email }).exec();
+  console.log(exper);
 
   if (!exper) {
       return next(new AppError('Please check the find one method above', 400));

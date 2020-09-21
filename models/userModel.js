@@ -49,23 +49,23 @@ const userSchema = new mongoose.Schema({
   },
   street: {
     type: String,
-    default: "845 Sherbrooke St W"
+    default: "DT Campus"
   },
   region: {
     type: String,
-    default: "Montreal, Quebec H3A 0G4"
+    default: "Montreal, Quebec"
   },
   major: {
     type: String,
     default: "NA"
   },
-  age: {
-    type: Number,
-    minimum: 1,
-    maximum: 200,
-    default: 18,
-    description: "must be an integer in [ 1, 200 ]"
-  },
+  // age: {
+  //   type: Number,
+  //   minimum: 1,
+  //   maximum: 200,
+  //   default: 18,
+  //   description: "must be an integer in [ 1, 200 ]"
+  // },
   birthday: {
     type: Number,
     default: 1,

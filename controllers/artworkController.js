@@ -134,6 +134,7 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
       price: req.body.price,
       description: req.body.description,
       artist: req.body.artist,
+      artistEmail: req.body.artistEmail,
       creationTime: req.body.creationTime,
       medium: req.body.medium,
       width: req.body.width,
@@ -246,6 +247,7 @@ exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
         const imagePath = `${doc.artworkfile.path.split('.')[0]}${size}.${
           doc.artworkfile.path.split('.')[1]
         }`;
+        console.log(imagePath);
         fs.access(imagePath, fs.constants.R_OK, error => {
           if (error) {
             //If image file is not found in the filesystem

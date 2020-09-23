@@ -61,8 +61,8 @@ const artWorkSchema = new mongoose.Schema({
     default: false
   },
   artworkfile: {
-    type: ArtWorkFile,
-    required: [true, 'Please upload the photo of your artwork!']
+    type: ArtWorkFile
+    //required: [true, 'Please upload the photo of your artwork!']
   }
   //index created on {artist, title}
 });

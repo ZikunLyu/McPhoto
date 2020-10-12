@@ -17,12 +17,20 @@ router.post(
   upload.single('file'),
   artworkController.uploadArtFileByTitleArtist
 );
+router.options(
+  '/uploadFileByTitleArtist',
+  artworkController.uploadArtFileByTitleArtistOptions
+)
 router.get('/compressByfilepath', artworkCompress.generateCompressedImage);
 router.get(
   '/getFilepathByTitleArtist',
   artworkController.getFilepathByTitleArtist
 );
 router.get('/getArtworkListByArtist', artworkController.getArtworkListByArtist);
+router.get(
+  '/getArtworkListByArtistEmail',
+  artworkController.getArtworkFileByArtistEmail
+);
 router.get('/getArtworkFileByArtist', artworkController.getArtworkFileByArtist);
 router.get(
   '/getFileInfoByTitleArtist',

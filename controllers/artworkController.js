@@ -148,6 +148,13 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.uploadArtFileByTitleArtistOptions = catchAsync(
+  async (req, res, next) => {
+    await console.log('options!');
+    res.setHeader('Access-Control-Allow-Headers', 'x-requested-with');
+    res.status(200).send('preflight response ok');
+  }
+);
 /*
   Controller method: upload the file of the artwork by the title and artist
   Note that the title of an artwork is only unique when combined with its artist
@@ -285,6 +292,34 @@ exports.getArtworkListByArtist = catchAsync(async (req, res, next) => {
       }
       console.log('All artwork quried!');
       res.send(doc);
+    }
+  );
+});
+
+exports.getArtworkFileByArtistEmail = catchAsync(async (req, res, next) => {
+  await ArtWork.find(
+    {
+      artistEmail: req.query.artistEmail
+    },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+        return next(new AppError('The artist has no artwork'));
+      }
+      let x = 0;
+      const arr = [];
+      for (x; x < doc.length; x += 1) {
+        const record = {
+          title: doc[x].title,
+          artist: doc[x].artist,
+          createTime: doc[x].creationTime,
+          price: doc[x].price,
+          medium: doc[x].medium,
+          filePath: doc[x].artworkfile.path
+        };
+        arr.push(record);
+      }
+      res.send(arr);
     }
   );
 });

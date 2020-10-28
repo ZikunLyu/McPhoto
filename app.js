@@ -14,6 +14,7 @@ const testRouter = require('./routes/testRoutes');
 const userRouter = require('./routes/userRoutes');
 const artRouter = require('./routes/artWorkRoutes');
 const experRouter = require('./routes/experienceRoutes');
+const transRouter = require('./routes/transactionRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -66,6 +67,7 @@ app.use((req, res, next) => {
 // 3) API ROUTES
 app.use('/api/v1', testRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/transactions', transRouter);
 app.use('/api/v1/arts', artRouter);
 app.use('/api/v1/expers', experRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));

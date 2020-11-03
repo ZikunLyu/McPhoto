@@ -65,7 +65,7 @@ app.use((req, res, next) => {
 });
 
 // 3) API ROUTES
-app.use('/api/v1', testRouter);
+app.use('/api/v1', testRouter); 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/transactions', transRouter);
 app.use('/api/v1/arts', artRouter);

@@ -146,6 +146,7 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
     });
     artwork.save();
   });
+  res.status(200).end('FileInfo upload successful!');
 });
 
 exports.uploadArtFileByTitleArtistOptions = catchAsync(
@@ -309,13 +310,17 @@ exports.getArtworkFileByArtistEmail = catchAsync(async (req, res, next) => {
       let x = 0;
       const arr = [];
       for (x; x < doc.length; x += 1) {
+        let fPath = 'data/utils/notfound.png';
+        if (typeof doc[x].artworkfile !== 'undefined') {
+          fPath = doc[x].artworkfile.path;
+        }
         const record = {
           title: doc[x].title,
           artist: doc[x].artist,
           createTime: doc[x].creationTime,
           price: doc[x].price,
           medium: doc[x].medium,
-          filePath: doc[x].artworkfile.path
+          filePath: fPath
         };
         arr.push(record);
       }

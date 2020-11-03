@@ -15,6 +15,11 @@ const transactionSchema = new mongoose.Schema({
     ref: 'ArtWork',
     required: [true, 'A transaction must have an artwork']
   },
+  type: {
+    type: String,
+    enum: ['Download', 'Rental', 'Sale'],
+    required: [true, 'A transaction must have a type']
+  },
   status: {
     type: String,
     enum: ['pending', 'finished', 'canceled'],

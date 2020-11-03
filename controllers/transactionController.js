@@ -7,6 +7,7 @@ exports.createTransaction = catchAsync(async (req, res, next) => {
   await Transaction.create({
     sender_email: req.body.sender_email,
     receiver_email: req.body.receiver_email,
+    type: req.body.type,
     artwork: req.body.artwork,
     msg: req.body.msg
   });

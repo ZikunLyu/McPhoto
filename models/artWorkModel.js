@@ -6,9 +6,17 @@ const artWorkSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide your artwork name!']
   },
-  price: {
+  rental_price: {
     type: Number,
-    required: [true, 'Please specify the price']
+    default: 0
+  },
+  download_price: {
+    type: Number,
+    default: 0
+  },
+  sale_price: {
+    type: Number,
+    default: 0
   },
   description: {
     type: String,

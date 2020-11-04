@@ -6,22 +6,22 @@ const router = express.Router();
 
 router.post(
   '/transaction',
-  authController.protect,
+  //authController.protect,
   transactionController.createTransaction
 );
 router.get(
   '/getTransactionSent',
-  authController.protect,
+  //authController.protect,
   transactionController.getTransactionSent
 );
 router.get(
   '/getTransactionReceived',
-  authController.protect,
+  //authController.protect,
   transactionController.getTransactionReceived
 );
 router.patch(
   '/updateTransaction',
-  authController.protect,
+  //authController.protect,
   transactionController.updateTransaction
 );
 

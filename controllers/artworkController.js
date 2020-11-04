@@ -148,7 +148,9 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
     }
     const artwork = new ArtWork({
       title: req.body.title,
-      price: req.body.price,
+      download_price: req.body.downloadPrice,
+      rental_price: req.body.rentalPrice,
+      sale_price: req.body.salePrice,
       description: req.body.description,
       artist: req.body.artist,
       artistEmail: req.body.artistEmail,
@@ -336,10 +338,21 @@ exports.getArtworkFileByArtistEmail = catchAsync(async (req, res, next) => {
           title: doc[x].title,
           artist: doc[x].artist,
           createTime: doc[x].creationTime,
-          price: doc[x].price,
+          downloadPrice: [],
+          rentalPrice: [],
+          salePrice: [],
           medium: doc[x].medium,
           filePath: fPath
         };
+        if (typeof doc[x].download_price !== 'undefined') {
+          record.downloadPrice = doc[x].download_price;
+        }
+        if (typeof doc[x].rental_price !== 'undefined') {
+          record.rentalPrice = doc[x].rental_price;
+        }
+        if (typeof doc[x].sale_price !== 'undefined') {
+          record.salePrice = doc[x].sale_price;
+        }
         arr.push(record);
       }
       res.send(arr);

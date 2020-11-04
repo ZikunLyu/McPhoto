@@ -7,6 +7,7 @@ const artworkCompress = require('../controllers/artworkfileCompress');
 
 const router = express.Router();
 
+router.get('/artwork', artworkController.getArtworkById);
 router.get('/artworks', artworkController.getAllArtworks);
 router.get('/artworksNum', artworkController.getAllArtworksNum);
 // TODO: call protect, as the API can only be called if logged in
@@ -20,7 +21,7 @@ router.post(
 router.options(
   '/uploadFileByTitleArtist',
   artworkController.uploadArtFileByTitleArtistOptions
-)
+);
 router.get('/compressByfilepath', artworkCompress.generateCompressedImage);
 router.get(
   '/getFilepathByTitleArtist',

@@ -121,6 +121,23 @@ exports.getAllArtworksNum = catchAsync(async (req, res) => {
   });
 });
 
+exports.getArtworkById = catchAsync(async (req, res, next) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return next(
+      new AppError('Please provide an id to get Artwork objects.', 400)
+    );
+  }
+
+  const a = await ArtWork.findOne({ _id: id });
+
+  res.status(200).json({
+    status: 'success',
+    a
+  });
+});
+
 exports.uploadArtInfo = catchAsync(async (req, res, next) => {
   await User.findOne({ name: req.body.artist }, function(err, doc) {
     if (err) {
@@ -228,6 +245,7 @@ exports.getFileInfoByTitleArtist = catchAsync(async (req, res, next) => {
     }
   );
 });
+
 exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
   const size = req.query.imageSize;
   await ArtWork.findOne(

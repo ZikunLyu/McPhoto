@@ -72,7 +72,21 @@ const artWorkSchema = new mongoose.Schema({
     type: ArtWorkFile
     //required: [true, 'Please upload the photo of your artwork!']
   },
-  accessList: [String]
+  accessList: [String],
+  ccLicense: {
+    type: String,
+    enum: [
+      'N/A',
+      'CC-BY-NC-ND',
+      'CC-BY-NC-SA',
+      'CC-BY-NC',
+      'CC-BY-ND',
+      'CC-BY-SA',
+      'CC-BY',
+      'CC0'
+    ],
+    default: 'N/A'
+  }
   //index created on {artist, title}
 });
 artWorkSchema.index({ artist: 1, title: 1 }, { unique: true });

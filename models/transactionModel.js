@@ -25,6 +25,10 @@ const transactionSchema = new mongoose.Schema({
     enum: ['pending', 'finished', 'canceled'],
     default: 'pending'
   },
+  artworkTitle: {
+    type: String,
+    required: [true, 'A transaction must have an artwork title']
+  },
   msg: String
 });
 const Transaction = mongoose.model('Transaction', transactionSchema);

@@ -23,7 +23,14 @@ class APIFeatures {
   filter() {
     const queryObj = { ...this.queryString };
     // The following fields need to be excluded as they are not part of query for filtering, they will be handled individually
-    const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
+    const excludedFields = [
+      'page',
+      'sort',
+      'limit',
+      'fields',
+      'search',
+      'category'
+    ];
     excludedFields.forEach(el => delete queryObj[el]);
 
     // 1) Filtering
@@ -39,13 +46,39 @@ class APIFeatures {
     // 1.5) search keyword in artist, description, and title field
     if (this.queryString.search) {
       const keyword = this.queryString.search;
-      this.query = ArtWork.find({
+      this.query = this.query.find({
         $or: [
           { artist: { $regex: keyword, $options: 'i' } },
           { description: { $regex: keyword, $options: 'i' } },
           { title: { $regex: keyword, $options: 'i' } }
         ]
       });
+    }
+    return this;
+  }
+
+  searchCategory() {
+    // 1.7) search keyword in artist, description, and title field
+    if (this.queryString.category) {
+      const cate = this.queryString.category;
+      if (cate === 'isForDownload') {
+        this.query = this.query.find({
+          isForDownload: true
+        });
+      } else if (cate === 'isForRental') {
+        this.query = this.query.find({
+          isForRental: true
+        });
+      } else if (cate === 'isForSale') {
+        this.query = this.query.find({
+          isForSale: true
+        });
+      } else if (cate === 'PhotoRepo') {
+        this.query = this.query.find({
+          isForDownload: true,
+          download_price: 0
+        });
+      }
     }
     return this;
   }
@@ -88,6 +121,7 @@ exports.getAllArtworks = catchAsync(async (req, res) => {
   const features = new APIFeatures(ArtWork.find(), req.query)
     .filter()
     .search()
+    .searchCategory()
     .sort()
     .limitFields()
     .paginate();
@@ -109,6 +143,7 @@ exports.getAllArtworksNum = catchAsync(async (req, res) => {
   const features = new APIFeatures(ArtWork.find(), req.query)
     .filter()
     .search()
+    .searchCategory()
     .sort()
     .limitFields()
     .paginate();
@@ -161,7 +196,8 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
       isForDownload: req.body.isForDownload,
       isForSale: req.body.isForDownload,
       isForRental: req.body.isForRental,
-      isSoldorRented: req.body.isSoldorRented
+      isSoldorRented: req.body.isSoldorRented,
+      ccLicense: req.body.ccLicense
     });
     artwork.save();
   });

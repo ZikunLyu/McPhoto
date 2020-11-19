@@ -38,5 +38,13 @@ router.get(
   artworkController.getFileInfoByTitleArtist
 );
 router.delete('/deleteAll', artworkController.deleteAll);
+router.delete(
+  '/deleteArtworkByTitleArtist',
+  artworkController.deleteArtworkByTitleArtist
+);
+router.delete(
+  '/deleteArtworkFilesByTitleArtist',
+  artworkController.deleteArtworkFilesByTitleArtist
+);
 
 module.exports = router;

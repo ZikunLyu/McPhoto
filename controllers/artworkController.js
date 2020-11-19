@@ -284,6 +284,83 @@ exports.getFileInfoByTitleArtist = catchAsync(async (req, res, next) => {
   );
 });
 
+exports.deleteArtworkByTitleArtist = catchAsync(async (req, res, next) => {
+  await ArtWork.deleteOne(
+    {
+      title: req.query.title,
+      artist: req.query.artist
+    },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.end('> The artwork has been deleted!');
+      }
+      if (doc == null) {
+        //If the artwork is not found in the dataBase
+        return next(new AppError('Error: The artwork does not exist'));
+      }
+    }
+  );
+});
+
+exports.deleteArtworkFilesByTitleArtist = catchAsync(async (req, res, next) => {
+  await ArtWork.findOne(
+    {
+      title: req.query.title,
+      artist: req.query.artist
+    },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+      }
+      if (doc == null) {
+        //If the artwork is not found in the dataBase
+        return next(new AppError('Error: The artwork does not exist'));
+      }
+      if (typeof doc.artworkfile === 'undefined') {
+        res.end('> No artwork file exist, deletion is not needed');
+      } else {
+        fs.access(
+          `${doc.artworkfile.path.split('.')[0]}.${
+            doc.artworkfile.path.split('.')[1]
+          }`,
+          fs.constants.R_OK,
+          error => {
+            if (error) {
+              console.log(err);
+            } else {
+              fs.unlinkSync(
+                `${doc.artworkfile.path.split('.')[0]}-small.${
+                  doc.artworkfile.path.split('.')[1]
+                }`
+              );
+
+              fs.unlinkSync(
+                `${doc.artworkfile.path.split('.')[0]}-medium.${
+                  doc.artworkfile.path.split('.')[1]
+                }`
+              );
+
+              fs.unlinkSync(
+                `${doc.artworkfile.path.split('.')[0]}-large.${
+                  doc.artworkfile.path.split('.')[1]
+                }`
+              );
+              fs.unlinkSync(
+                `${doc.artworkfile.path.split('.')[0]}.${
+                  doc.artworkfile.path.split('.')[1]
+                }`
+              );
+            }
+          }
+        );
+      }
+      res.end('> artwork files deleted');
+    }
+  );
+});
+
 exports.getFilepathByTitleArtist = catchAsync(async (req, res, next) => {
   const size = req.query.imageSize;
   await ArtWork.findOne(

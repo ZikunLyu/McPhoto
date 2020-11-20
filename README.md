@@ -3,7 +3,8 @@ Learn how to deploy in Heroku, please check https://www.freecodecamp.org/news/ho
 
 ## Start Backend:
 1. ```npm install```
-2. run server: ```npm run start:dev```
+2. ```sudo pip install pillow``` (a package for image compression)
+3. run server: ```npm run start:dev```
 
 To start the app in production mode: ```npm run start:prod```
 

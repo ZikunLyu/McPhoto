@@ -10,6 +10,10 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     required: [true, 'A transaction must have a receiver email']
   },
+  artist: {
+    type: String,
+    required: [true, 'A transaction must have an artist']
+  },
   artwork: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ArtWork',

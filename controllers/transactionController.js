@@ -9,6 +9,7 @@ exports.createTransaction = catchAsync(async (req, res, next) => {
     receiver_email: req.body.receiver_email,
     type: req.body.type,
     artwork: req.body.artwork,
+    artist: req.body.artist,
     artworkTitle: req.body.artworkTitle,
     msg: req.body.msg
   });

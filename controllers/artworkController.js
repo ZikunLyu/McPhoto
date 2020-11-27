@@ -194,7 +194,7 @@ exports.uploadArtInfo = catchAsync(async (req, res, next) => {
       width: req.body.width,
       height: req.body.height,
       isForDownload: req.body.isForDownload,
-      isForSale: req.body.isForDownload,
+      isForSale: req.body.isForSale,
       isForRental: req.body.isForRental,
       isSoldorRented: req.body.isSoldorRented,
       ccLicense: req.body.ccLicense
